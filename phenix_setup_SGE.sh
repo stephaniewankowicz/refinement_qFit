@@ -2,15 +2,15 @@
 #$ -l h_vmem=4G
 #$ -l mem_free=4G
 #$ -t 1-10
-#$ -l h_rt=10:00:00
-#$ -pe smp 1
+#$ -l h_rt=24:00:00
+#$ -pe smp 4
 #$ -R yes
 #$ -V
 
 '''
-This is the submission script for pre-qFit refinement. In the folders to run this script you should have the PDB and the mtz files.
+This is the submission script for pre-qFit refinement, creating the composite omit map, and running qFit protein. In the folders to run this script you should have the PDB and the mtz files.
 Input: List of PDB IDs
-Output: Refined PDB 
+Output: Refined PDB, output of qfit: multiconformer_model2.pdb 
 '''
 
 #________________________________________________INPUTS________________________________________________#
@@ -42,6 +42,8 @@ cd ${TMPDIR}
 cp -R ${base_dir}/${PDB}/ $TMPDIR
 cd $PDB
 
-sh phenix_prep.sh $PDB
+sh phenix_prep.sh $PDB #run refinement
+phenix.composite_omit_map ${PDB}-sf.mtz ${PDB}_updated.pdb.refine_001.pdb omit-type=refine r_free_flags.generate=True #create composite omit map
+qfit_protein composite_omit_map.mtz -l 2FOFCWT,PH2FOFCWT ${PDB}_updated.pdb.refine_001.pdb -p 4 
 
 cp -R ${TMPDIR}/$PDB/ $base_dir/ #move back from TMP to basedir
