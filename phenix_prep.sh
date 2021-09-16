@@ -1,19 +1,16 @@
 #!/bin/bash
-#set up a new refinement
-#Stephanie Wankowicz 4/5/2019
-#git: 01-05-2021
 
-#source Phenix
+#________________________________________________Activate Env________________________________________________#
+source /wynton/group/fraser/swankowicz/phenix-installer-1.19.2-4158-intel-linux-2.6-x86_64-centos6/phenix-1.19.2-4158/phenix_env.sh
 export PHENIX_OVERWRITE_ALL=true
 
+#________________________________________________INPUTS________________________________________________#
 PDB=$1
 
-echo $PDB
-echo $PWD  
 
-  
-#get ligand name and list of ligands for harmonic restraints (only used for ensemble refinement)
-~/anaconda3/envs/phenix_ens/bin/python /wynton/home/fraserlab/swankowicz/190419_Phenix_ensemble/PDB_ligand_parser.py $PDB /wynton/home/fraserlab/swankowicz/190419_Phenix_ensemble/ligands_to_remove.csv
+#________________________________________________RUN REFINEMENT________________________________________________#  
+#get ligand name and list of ligands for harmonic restraints (for ensemble refinement)
+python /wynton/home/fraserlab/swankowicz/190419_Phenix_ensemble/PDB_ligand_parser.py $PDB /wynton/home/fraserlab/swankowicz/190419_Phenix_ensemble/ligands_to_remove.csv
 lig_name=$(cat "ligand_name.txt")
 echo $lig_name
 
@@ -21,7 +18,7 @@ echo '________________________________________________________Starting Phenix ci
 phenix.cif_as_mtz $PDB-sf.cif --extend_flags --merge
 
 echo '________________________________________________________Starting Phenix Ready Set________________________________________________________'
-phenix.ready_set pdb_file_name=$PDB.pdb
+phenix.ready_set pdb_file_name=${PDB}.pdb
 
 echo '________________________________________________________Checking on FOBS________________________________________________________'
 if grep -F _refln.F_meas_au $PDB-sf.cif; then

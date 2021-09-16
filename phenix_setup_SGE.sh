@@ -7,16 +7,21 @@
 #$ -R yes
 #$ -V
 
+'''
+This is the submission script for pre-qFit refinement. In the folders to run this script you should have the PDB and the mtz files.
+Input: List of PDB IDs
+Output: Refined PDB 
+'''
 
 #________________________________________________INPUTS________________________________________________#
 input_file=/wynton/group/fraser/swankowicz/ultra_high_res/ultra_high_res_names_initial.txt #list of PDB IDs
-base_dir='/wynton/group/fraser/swankowicz//ultra_high_res/' #location of folders with PDB
+base_dir='/wynton/group/fraser/swankowicz/ultra_high_res/' #location of folders with PDB
 export OMP_NUM_THREADS=1
 
 #________________________________________________Activate Env________________________________________________#
 source /wynton/group/fraser/swankowicz/phenix-installer-1.19.2-4158-intel-linux-2.6-x86_64-centos6/phenix-1.19.2-4158/phenix_env.sh
 export PATH="/wynton/home/fraserlab/swankowicz/anaconda3/bin:$PATH"
-source activate qfit
+source activate qfit #conda env with qFit activated in it
 which python
 
 #________________________________________________RUN PHENIX________________________________________________#
@@ -37,6 +42,6 @@ cd ${TMPDIR}
 cp -R ${base_dir}/${PDB}/ $TMPDIR
 cd $PDB
 
-sh /wynton/group/fraser/swankowicz/script/ens_refinement_scripts/phenix_prep.sh $PDB $NSLOTS $base_dir #todo: remove NSLOTS
+sh phenix_prep.sh $PDB
 
 cp -R ${TMPDIR}/$PDB/ $base_dir/ #move back from TMP to basedir
